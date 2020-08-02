@@ -62,7 +62,7 @@ class Parser
             }
 
             if (($row[0] ?? '') === '#') {
-                # Skip comment
+                // Skip comment
                 continue;
             }
 
