@@ -1,7 +1,7 @@
 {
     "name": "northern-lights/hostsfile-parser",
     "description": "Hosts file parser",
-    "type": "project",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
