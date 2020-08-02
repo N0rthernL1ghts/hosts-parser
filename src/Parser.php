@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NorthernLights\HostsFileParser;
 
 use NorthernLights\HostsFileParser\Exception\HostsFileException;
+use NorthernLights\HostsFileParser\Exception\ParserException;
 
 /**
  * Hosts file parser
@@ -15,6 +16,7 @@ use NorthernLights\HostsFileParser\Exception\HostsFileException;
 class Parser
 {
     public const DELIMITER = ' ';
+    public const STRICT_SYNTAX = true;
 
     /** @var HostsFile */
     protected $hostsFile;
@@ -22,19 +24,24 @@ class Parser
     /** @var Host[]|null */
     protected $hosts;
 
+    /** @var bool */
+    protected $strictSyntax;
+
     /**
      * HostsFile constructor.
      * @param HostsFile $filename
+     * @param bool $strictSyntax
      *
      * @throws HostsFileException
      */
-    public function __construct(HostsFile $hostsFile)
+    public function __construct(HostsFile $hostsFile, bool $strictSyntax = false)
     {
         if ($hostsFile->getSplFileObject()->getSize() === 0) {
             throw new HostsFileException('Hosts file is empty');
         }
 
         $this->hostsFile = $hostsFile;
+        $this->strictSyntax = $strictSyntax;
     }
 
     /**
@@ -69,6 +76,10 @@ class Parser
             $dlmCount = substr_count($row, self::DELIMITER); // This is faster than explode->count check
             if ($dlmCount < 1) {
                 // Skip unprocessable line.
+                if ($this->strictSyntax) {
+                    throw new ParserException('Syntax error at line ' . $splFile->key());
+                }
+
                 continue;
             }
 
