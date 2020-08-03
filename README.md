@@ -15,18 +15,30 @@ It really is that easy!
 
 ## Usage
 ``` php
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace NorthernLights\HostsFileParser\Example;
 
+use NorthernLights\HostsFileParser\Host;
 use NorthernLights\HostsFileParser\HostsFile;
 use NorthernLights\HostsFileParser\Parser;
 
 require __DIR__ . '/vendor/autoload.php';
 
 $parser = new Parser(new HostsFile('/etc/hosts'));
+$hosts = $parser->parse();
 
-dump($parser->parse());
+/** @var Host $host */
+foreach ($hosts as $host) {
+    $domains = $host->getDomains();
+    echo 'Host: ' . $host->getIp() . PHP_EOL;
+    echo sprintf('Domains: %d -> { %s }', count($domains), implode(', ', $domains)) . PHP_EOL;
+    echo 'Line: ' . $host->getLine() . PHP_EOL;
+    echo '--------------------------------------' . PHP_EOL;
+}
+
 ```
 
 ## PSR-2 Standard
