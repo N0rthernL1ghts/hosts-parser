@@ -67,7 +67,7 @@ class Parser
                 continue;
             }
 
-            $hosts[] = $this->extractHost($row);
+            $hosts[] = $this->parseEntry($row);
         }
 
         return $this->hosts = $hosts;
@@ -136,21 +136,20 @@ class Parser
     }
 
     /**
-     * Extract host from entry
+     * Parse entry and extract host and domains
      *
      * @param string $token
      * @return Host
      */
-    private function extractHost(string $token): Host
+    private function parseEntry(string $token): Host
     {
-        list($ip, $host) = explode(self::DELIMITER, $token, 2);
+        $tokens = explode(self::DELIMITER, $token);
         $currentLine = $this->hostsFile->getSplFileObject()->key();
 
-        // If there is more than one host per entry, then we need to handle it properly
-        if ($this->countTokens($token) > 1) {
-            return  new Host($ip, explode(self::DELIMITER, $host), $currentLine);
-        }
-
-        return new Host($ip, [$host], $currentLine);
+        return new Host(
+            array_shift($tokens),
+            $tokens,
+            $currentLine
+        );
     }
 }
