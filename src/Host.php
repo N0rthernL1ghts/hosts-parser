@@ -94,4 +94,14 @@ class Host
     {
         return $this->line;
     }
+
+    /**
+     * Check if IP is IPv4.
+     * If not, it's probably IPv6
+     * @return bool
+     */
+    public function isIPv4(): bool
+    {
+        return filter_var($this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
+    }
 }
