@@ -80,7 +80,7 @@ class Parser
      * @param string $replacement
      * @return string
      */
-    private function removeExtraWhitespaces(string $input, string $replacement = self::DELIMITER)
+    private function removeExtraWhitespaces(string $input, string $replacement = self::DELIMITER): string
     {
         return trim(
             preg_replace('/\s+/', $replacement, $input)
@@ -113,7 +113,7 @@ class Parser
     /**
      * Check if token can be parsed
      *
-     * @param int $token
+     * @param string $token
      * @return bool
      *
      * @throws ParserException
