@@ -1,7 +1,9 @@
 Hosts file parser
 =======================
-Lightweight and simple library for parsing [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)). 
+[![Maintainability](https://api.codeclimate.com/v1/badges/05c4eb3a3e4c9fdb9b83/maintainability)](https://codeclimate.com/github/N0rthernL1ghts/hosts-parser/maintainability)
 
+
+Lightweight and simple library for parsing [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)). 
 All operating systems that use this format are supported. 
 
 ## Install
