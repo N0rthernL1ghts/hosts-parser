@@ -61,40 +61,96 @@ class Parser
 
         /** @var string $row */
         foreach ($splFile as $row) {
-            $row = trim(preg_replace('/\s+/', self::DELIMITER, $row));
+            $row = $this->removeExtraWhitespaces($row);
 
-            if ($row === '') {
-                // Skip empty entries. Lines structured of multiple whitespaces are not skipped by SplFileObject
+            if (!$this->isTokenParsable($row)) {
                 continue;
             }
 
-            if (($row[0] ?? '') === '#') {
-                // Skip comment
-                continue;
-            }
-
-            $dlmCount = substr_count($row, self::DELIMITER); // This is faster than explode->count check
-            if ($dlmCount < 1) {
-                // Skip unprocessable line.
-                if ($this->strictSyntax) {
-                    throw new ParserException('Syntax error at line ' . $splFile->key());
-                }
-
-                continue;
-            }
-
-            list($ip, $host) = explode(self::DELIMITER, $row, 2);
-
-            // If there is more than one host per entry, then we need to handle it properly
-            if ($dlmCount > 1) {
-                $hosts[] = new Host($ip, explode(self::DELIMITER, $host), $splFile->key());
-
-                continue;
-            }
-
-            $hosts[] = new Host($ip, [$host], $splFile->key());
+            $hosts[] = $this->extractHost($row);
         }
 
         return $this->hosts = $hosts;
+    }
+
+    /**
+     * Trim redundant whitespaces
+     *
+     * @param string $input
+     * @param string $replacement
+     * @return string
+     */
+    private function removeExtraWhitespaces(string $input, string $replacement = self::DELIMITER)
+    {
+        return trim(
+            preg_replace('/\s+/', $replacement, $input)
+        );
+    }
+
+    /**
+     * If first character is #, then this is a comment
+     *
+     * @param string $token
+     * @return bool
+     */
+    private function isComment(string $token): bool
+    {
+        return ($token[0] ?? '') === '#';
+    }
+
+    /**
+     * Number of tokens (delimiters) in file
+     * This is faster than explode->count check
+     *
+     * @param string $input
+     * @return int
+     */
+    private function countTokens(string $input): int
+    {
+        return substr_count($input, self::DELIMITER);
+    }
+
+    /**
+     * Check if token can be parsed
+     *
+     * @param int $token
+     * @return bool
+     *
+     * @throws ParserException
+     */
+    private function isTokenParsable(string $token): bool
+    {
+        if (($token === '') || $this->isComment($token)) {
+            return false;
+        }
+
+        if ($this->countTokens($token) < 1) {
+            if ($this->strictSyntax) {
+                throw new ParserException('Syntax error at line ' . $this->hostsFile->getSplFileObject()->key());
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Extract host from entry
+     *
+     * @param string $token
+     * @return Host
+     */
+    private function extractHost(string $token): Host
+    {
+        list($ip, $host) = explode(self::DELIMITER, $token, 2);
+        $currentLine = $this->hostsFile->getSplFileObject()->key();
+
+        // If there is more than one host per entry, then we need to handle it properly
+        if ($this->countTokens($token) > 1) {
+            return  new Host($ip, explode(self::DELIMITER, $host), $currentLine);
+        }
+
+        return new Host($ip, [$host], $currentLine);
     }
 }
