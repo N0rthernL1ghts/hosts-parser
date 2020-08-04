@@ -36,9 +36,9 @@ foreach ($hosts as $host) {
     echo 'Host: ' . $host->getIp() . PHP_EOL;
     echo sprintf('Domains: %d -> { %s }', count($domains), implode(', ', $domains)) . PHP_EOL;
     echo 'Line: ' . $host->getLine() . PHP_EOL;
+    echo sprintf('Raw entry: [ %s ]', $host) . PHP_EOL;
     echo '--------------------------------------' . PHP_EOL;
 }
-
 ```
 
 ## PSR-2 Standard
