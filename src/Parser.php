@@ -59,7 +59,10 @@ class Parser
         $splFile = $this->hostsFile->getSplFileObject();
         $hosts = [];
 
-        /** @var string $row */
+        /**
+         * Traverse lines one by one
+         * @var string $row
+         */
         foreach ($splFile as $row) {
             $row = $this->removeExtraWhitespaces($row);
 
