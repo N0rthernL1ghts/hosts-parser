@@ -120,7 +120,8 @@ class Parser
      */
     private function isTokenParsable(string $token): bool
     {
-        if (($token === '') || $this->isComment($token)) {
+          // Sanitizer will strip down all whitespaces to one, which is enough to skip empty lines here
+        if (($token === '') || ($token === ' ') || $this->isComment($token)) {
             return false;
         }
 

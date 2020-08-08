@@ -58,7 +58,7 @@ class HostsFile
     {
         $splFile = new SplFileObject($this->filename, 'rb');
         $splFile->flock(LOCK_EX);
-        $splFile->setFlags(SplFileObject::READ_AHEAD | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE);
+        $splFile->setFlags(SplFileObject::READ_AHEAD | SplFileObject::DROP_NEW_LINE);
         $this->splFile = $splFile;
     }
 }
