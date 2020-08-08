@@ -72,6 +72,8 @@ class Parser
 
             $hosts[] = $this->parseEntry($row);
         }
+        // Move pointer back to beginning
+        $splFile->fseek(0);
 
         return $this->hosts = $hosts;
     }
