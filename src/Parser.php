@@ -148,7 +148,7 @@ class Parser
     private function parseEntry(string $token): Host
     {
         $tokens = explode(self::DELIMITER, $token);
-        $currentLine = $this->hostsFile->getSplFileObject()->key();
+        $currentLine = ($this->hostsFile->getSplFileObject()->key() + 1);
 
         return new Host(
             array_shift($tokens),
