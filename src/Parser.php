@@ -17,6 +17,7 @@ class Parser
 {
     public const DELIMITER = ' ';
     public const STRICT_SYNTAX = true;
+    public const PARSE_ALL_FORCE_LARGE = true;
 
     /** @var HostsFile */
     protected $hostsFile;
@@ -45,19 +46,54 @@ class Parser
     }
 
     /**
-     * Parse
+     * This is simple but costly parsing.
+     * Usage is discouraged unless absolutely necessary.
      *
+     * @param bool $forceLarge - Override memory safety. Usage of this one could result with OOM in certain cases
      * @return Host[]
+     *
+     * @throws ParserException
      */
-    public function parse(): array
+    public function parseAll(bool $forceLarge = false): array
     {
        // There is no point of re-parsing as HostsFile is immutable
         if ($this->hosts !== null) {
             return $this->hosts;
         }
 
+        /**
+         * If file is larger than 64MB, storing everything to array would consume a lot of memory.
+         * OOM could be caused in certain cases.
+         */
+        if (!$forceLarge && ($this->hostsFile->getSplFileObject()->getSize() > 67108864)) {
+            throw new ParserException(
+                'HostsFile is to large to use this method. ' .
+                'Please use generator ' . __CLASS__ . '::parse() instead.'
+            );
+        }
+
+        return $this->hosts = iterator_to_array($this->parse());
+    }
+
+    /**
+     * Very lightweight and should be used whenever possible.
+     * This allows parsing of very large files without consuming as much memory.
+     *
+     * @return \Generator
+     *
+     * @throws ParserException
+     */
+    public function parse(): \Generator
+    {
+        // There is no point of re-parsing as HostsFile is immutable
+        if ($this->hosts !== null) {
+            foreach ($this->hosts as $host) {
+                yield $host;
+            }
+            return;
+        }
+
         $splFile = $this->hostsFile->getSplFileObject();
-        $hosts = [];
 
         /**
          * Traverse lines one by one
@@ -70,12 +106,10 @@ class Parser
                 continue;
             }
 
-            $hosts[] = $this->parseEntry($row);
+            yield $this->parseEntry($row);
         }
         // Move pointer back to beginning
         $splFile->fseek(0);
-
-        return $this->hosts = $hosts;
     }
 
     /**
