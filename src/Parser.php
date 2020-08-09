@@ -88,10 +88,7 @@ class Parser
     {
         // There is no point of re-parsing as HostsFile is immutable
         if ($this->hosts !== null) {
-            foreach ($this->hosts as $host) {
-                yield $host;
-            }
-            return;
+            yield from $this->hosts;
         }
 
         $splFile = $this->hostsFile->getSplFileObject();
