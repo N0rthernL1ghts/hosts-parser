@@ -30,10 +30,9 @@ use NorthernLights\HostsFileParser\Parser;
 require __DIR__ . '/vendor/autoload.php';
 
 $parser = new Parser(new HostsFile('/etc/hosts'));
-$hosts = $parser->parse();
 
 /** @var Host $host */
-foreach ($hosts as $host) {
+foreach ($parser->parse() as $host) {
     $domains = $host->getDomains();
     echo 'Host: ' . $host->getIp() . PHP_EOL;
     echo sprintf('Domains: %d -> { %s }', count($domains), implode(', ', $domains)) . PHP_EOL;
@@ -41,7 +40,12 @@ foreach ($hosts as $host) {
     echo sprintf('Raw entry: [ %s ]', $host) . PHP_EOL;
     echo '--------------------------------------' . PHP_EOL;
 }
+
 ```
+
+Please note that NorthernLights\HostsFileParser\Parser::parse() is a generator. 
+
+To parse all at once and return array, you can use Parser::parseAll() although discouraged as it could cause OOM in certain cases.
 
 ## PSR-2 Standard
 Library strives to comply with PSR-2 coding standards, therefore we included following commands:
