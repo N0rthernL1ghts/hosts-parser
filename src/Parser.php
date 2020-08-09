@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NorthernLights\HostsFileParser;
 
+use Iterator;
 use NorthernLights\HostsFileParser\Exception\HostsFileException;
 use NorthernLights\HostsFileParser\Exception\ParserException;
 
@@ -79,11 +80,11 @@ class Parser
      * Very lightweight and should be used whenever possible.
      * This allows parsing of very large files without consuming as much memory.
      *
-     * @return \Generator
+     * @return Iterator
      *
      * @throws ParserException
      */
-    public function parse(): \Generator
+    public function parse(): Iterator
     {
         // There is no point of re-parsing as HostsFile is immutable
         if ($this->hosts !== null) {
